@@ -1,0 +1,20 @@
+title: PDF to Markdown Converter
+description: Transform PDF documents into clean Markdown with advanced image extraction
+url: "https://allarddewinter.github.io"
+baseurl: "/pdf-to-markdown-converter"
+author: Allard de Winter
+
+theme: minima
+markdown: kramdown
+highlighter: rouge
+
+plugins:
+  - jekyll-seo-tag
+
+repository: allarddewinter/pdf-to-markdown-converter
+github_username: allarddewinter
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
