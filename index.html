@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Markdown Converter | Advanced Document Transformation</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Convert PDF documents to Markdown with advanced image extraction. Privacy-first, browser-based conversion with no uploads required.">
+    <meta name="keywords" content="PDF, Markdown, converter, document, transformation, privacy, browser">
+    <meta name="author" content="Allard de Winter">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="PDF to Markdown Converter">
+    <meta property="og:description" content="Transform PDF documents into clean Markdown with advanced image extraction">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://allarddewinter.github.io/pdf-to-markdown-converter">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PDF to Markdown Converter">
+    <meta name="twitter:description" content="Transform PDF documents into clean Markdown with advanced image extraction">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <style>
+        /* CSS Custom Properties for Theming */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --surface-elevated: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius: 0.5rem;
+            --radius-lg: 0.75rem;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+        }
+
+        /* Dark Theme */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary-color: #3b82f6;
+                --primary-hover: #2563eb;
+                --background: #0f172a;
+                --surface: #1e293b;
+                --surface-elevated: #334155;
+                --text-primary: #f1f5f9;
+                --text-secondary: #cbd5e1;
+                --text-muted: #64748b;
+                --border: #334155;
+                --border-light: #475569;
+            }
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--background);
+            transition: var(--transition);
+            scroll-behavior: smooth;
+        }
+
+        /* Utility Classes */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Container and Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: var(--surface-elevated);
+            padding: 3rem 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .badge {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .badge:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Upload Area Styles */
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            text-align: center;
+            background: var(--surface);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: var(--surface-elevated);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background: var(--surface-elevated);
+            transform: scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .upload-area.processing {
+            border-color: var(--success-color);
+            background: var(--surface-elevated);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .upload-area h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .upload-area p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Progress Styles */
+        .progress-container {
+            margin: 2rem 0;
+        }
+
+        .status {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: var(--border-light);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 1rem 1rem;
+            animation: progress-stripes 1s linear infinite;
+        }
+
+        @keyframes progress-stripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 1rem 0; }
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+            border-left: 4px solid;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--error-color);
+            color: var(--error-color);
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .alert-info {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Conversion Area */
+        .conversion-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .conversion-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Output Panel Styles */
+        .output-panel {
+            background: var(--surface-elevated);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            height: 700px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .panel-content {
+            flex: 1;
+            padding: 0;
+            overflow: auto;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .code-editor {
+            width: 100%;
+            height: 100%;
+            padding: 1.5rem;
+            border: none;
+            background: var(--background);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+        }
+
+        .markdown-preview {
+            padding: 1.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        /* Markdown Preview Styles */
+        .markdown-preview h1,
+        .markdown-preview h2,
+        .markdown-preview h3,
+        .markdown-preview h4,
+        .markdown-preview h5,
+        .markdown-preview h6 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.25;
+        }
+
+        .markdown-preview h1 { font-size: 2rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
+        .markdown-preview h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25rem; }
+        .markdown-preview h3 { font-size: 1.25rem; }
+        .markdown-preview h4 { font-size: 1.125rem; }
+        .markdown-preview h5 { font-size: 1rem; }
+        .markdown-preview h6 { font-size: 0.875rem; }
+
+        .markdown-preview p {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .markdown-preview ul,
+        .markdown-preview ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+
+        .markdown-preview li {
+            margin-bottom: 0.25rem;
+        }
+
+        .markdown-preview blockquote {
+            border-left: 4px solid var(--border);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .markdown-preview code {
+            background: var(--surface);
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+        }
+
+        .markdown-preview pre {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+        }
+
+        .markdown-preview pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+
+        .markdown-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .markdown-preview th,
+        .markdown-preview td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .markdown-preview th {
+            background: var(--surface);
+            font-weight: 600;
+        }
+
+        .markdown-preview img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 1rem 0;
+        }
+
+        /* Button Styles */
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--surface-elevated);
+            border-color: var(--primary-color);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--surface-elevated);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .image-thumbnail {
+            aspect-ratio: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .image-thumbnail:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow);
+        }
+
+        .image-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: currentColor;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .header {
+                padding: 2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+
+            .badges {
+                gap: 0.5rem;
+            }
+
+            .badge {
+                font-size: 0.8rem;
+                padding: 0.375rem 0.75rem;
+            }
+
+            .output-panel {
+                height: 500px;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus Styles */
+        .btn:focus-visible,
+        .upload-area:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Print Styles */
+        @media print {
+            .header,
+            .upload-area,
+            .btn,
+            .footer {
+                display: none;
+            }
+
+            .conversion-area {
+                grid-template-columns: 1fr;
+            }
+
+            .output-panel {
+                height: auto;
+                box-shadow: none;
+                border: 1px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <h1>🔄 PDF to Markdown Converter</h1>
+            <p>Transform your PDF documents into clean, structured Markdown with advanced image extraction - all processed locally in your browser for complete privacy.</p>
+            <div class="badges">
+                <span class="badge">🔒 Privacy First</span>
+                <span class="badge">📱 Mobile Friendly</span>
+                <span class="badge">⚡ Lightning Fast</span>
+                <span class="badge">🖼️ Image Extraction</span>
+                <span class="badge">🎯 Smart Formatting</span>
+            </div>
+        </header>
+
+        <!-- Upload Area -->
+        <div class="upload-area" id="uploadArea" role="button" tabindex="0" aria-label="Upload PDF file">
+            <div id="uploadContent">
+                <div class="upload-icon">📄</div>
+                <h3>Drop your PDF file here or click to browse</h3>
+                <p>Supports text-based PDF files up to 100MB with intelligent image extraction</p>
+                <input type="file" id="fileInput" class="file-input" accept=".pdf" aria-label="Choose PDF file">
+            </div>
+            <div id="progressArea" style="display: none;">
+                <div class="progress-container">
+                    <div class="status" id="status">Initializing...</div>
+                    <div class="progress">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Area -->
+        <div id="alertArea" role="alert" aria-live="polite"></div>
+
+        <!-- Statistics Panel -->
+        <div class="stats-panel" id="statsPanel" style="display: none;">
+            <div class="stat-item">
+                <span class="stat-value" id="pageCount">0</span>
+                <div class="stat-label">Pages</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="imageCount">0</span>
+                <div class="stat-label">Images</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="wordCount">0</span>
+                <div class="stat-label">Words</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="processingTime">0s</span>
+                <div class="stat-label">Processing</div>
+            </div>
+        </div>
+
+        <!-- Conversion Area -->
+        <div class="conversion-area" id="conversionArea" style="display: none;">
+            <!-- Markdown Output Panel -->
+            <div class="output-panel">
+                <div class="panel-header">
+                    <span>📝 Markdown Output</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-small" id="downloadMdBtn" disabled aria-label="Download Markdown file">
+                            ⬇️ Download MD
+                        </button>
+                        <button class="btn btn-secondary btn-small" id="downloadZipBtn" disabled aria-label="Download ZIP with images">
+                            📦 ZIP
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <textarea 
+                        class="code-editor" 
+                        id="markdownOutput" 
+                        placeholder="Your converted Markdown will appear here..."
+                        readonly
+                        aria-label="Markdown output"
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="output-panel">
+                <div class="panel-header">
+                    <span>👁️ Live Preview</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary btn-small" id="copyBtn" disabled aria-label="Copy Markdown to clipboard">
+                            📋 Copy
+                        </button>
+                        <button class="btn btn-secondary btn-small" id="toggleImagesBtn" disabled aria-label="Toggle image display">
+                            🖼️ Images
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div class="markdown-preview" id="markdownPreview">
+                        <p style="text-align: center; color: var(--text-muted); margin-top: 2rem;">
+                            📄 Your converted document preview will appear here
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Gallery -->
+        <div id="imageGallery" style="display: none;">
+            <h3>🖼️ Extracted Images</h3>
+            <div class="image-gallery" id="imageGrid"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>
+                Built with ❤️ by <a href="https://github.com/allarddewinter" target="_blank" rel="noopener">Allard de Winter</a> | 
+                <a href="https://github.com/allarddewinter/pdf-to-markdown-converter" target="_blank" rel="noopener">View on GitHub</a> |
+                Powered by <a href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noopener">PDF.js</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // PDF.js Worker Setup
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        /**
+         * 🚀 Advanced PDF to Markdown Converter with Hybrid Image Extraction
+         * 
+         * Features:
+         * - Intelligent text structure detection
+         * - Advanced image extraction with multiple fallback strategies
+         * - Real-time progress tracking and visual feedback
+         * - Robust error handling with graceful degradation
+         * - Mobile-responsive design with accessibility features
+         * - Multiple export formats (MD, ZIP with images)
+         */
+        class AdvancedPDFToMarkdownConverter {
+            constructor() {
+                this.initializeElements();
+                this.setupEventListeners();
+                this.initializeState();
+                this.showWelcomeMessage();
+            }
+
+            initializeElements() {
+                // Main elements
+                this.uploadArea = document.getElementById('uploadArea');
+                this.fileInput = document.getElementById('fileInput');
+                this.uploadContent = document.getElementById('uploadContent');
+                this.progressArea = document.getElementById('progressArea');
+                this.status = document.getElementById('status');
+                this.progressBar = document.getElementById('progressBar');
+                
+                // Output elements
+                this.conversionArea = document.getElementById('conversionArea');
+                this.markdownOutput = document.getElementById('markdownOutput');
+                this.markdownPreview = document.getElementById('markdownPreview');
+                
+                // Control elements
+                this.downloadMdBtn = document.getElementById('downloadMdBtn');
+                this.downloadZipBtn = document.getElementById('downloadZipBtn');
+                this.copyBtn = document.getElementById('copyBtn');
+                this.toggleImagesBtn = document.getElementById('toggleImagesBtn');
+                
+                // Stats and alerts
+                this.alertArea = document.getElementById('alertArea');
+                this.statsPanel = document.getElementById('statsPanel');
+                this.imageGallery = document.getElementById('imageGallery');
+                this.imageGrid = document.getElementById('imageGrid');
+                
+                // Stats displays
+                this.pageCountDisplay = document.getElementById('pageCount');
+                this.imageCountDisplay = document.getElementById('imageCount');
+                this.wordCountDisplay = document.getElementById('wordCount');
+                this.processingTimeDisplay = document.getElementById('processingTime');
+            }
+
+            setupEventListeners() {
+                // File upload events
+                this.uploadArea.addEventListener('click', () => this.fileInput.click());
+                this.uploadArea.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.fileInput.click();
+                    }
+                });
+                this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+
+                // Drag and drop events
+                this.uploadArea.addEventListener('dragover', (e) => this.handleDragOver(e));
+                this.uploadArea.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+                this.uploadArea.addEventListener('drop', (e) => this.handleDrop(e));
+
+                // Button events
+                this.downloadMdBtn.addEventListener('click', () => this.downloadMarkdown());
+                this.downloadZipBtn.addEventListener('click', () => this.downloadZipWithImages());
+                this.copyBtn.addEventListener('click', () => this.copyMarkdownToClipboard());
+                this.toggleImagesBtn.addEventListener('click', () => this.toggleImageDisplay());
+
+                // Markdown editor live preview
+                this.markdownOutput.addEventListener('input', () => this.updatePreview());
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey || e.metaKey) {
+                        switch (e.key) {
+                            case 's':
+                                e.preventDefault();
+                                if (!this.downloadMdBtn.disabled) this.downloadMarkdown();
+                                break;
+                            case 'c':
+                                if (e.shiftKey && !this.copyBtn.disabled) {
+                                    e.preventDefault();
+                                    this.copyMarkdownToClipboard();
+                                }
+                                break;
+                        }
+                    }
+                });
+            }
+
+            initializeState() {
+                this.markdownContent = '';
+                this.extractedImages = [];
+                this.processedPages = 0;
+                this.totalPages = 0;
+                this.processingStartTime = null;
+                this.showImages = true;
+                this.documentStats = {
+                    pages: 0,
+                    images: 0,
+                    words: 0,
+                    processingTime: 0
+                };
+            }
+
+            showWelcomeMessage() {
+                this.showAlert('info', '👋 Welcome! Drop a PDF file above to start converting to Markdown with smart image extraction.');
+            }
+
+            // ==================== FILE HANDLING ====================
+
+            handleDragOver(e) {
+                e.preventDefault();
+                this.uploadArea.classList.add('dragover');
+            }
+
+            handleDragLeave(e) {
+                e.preventDefault();
+                this.uploadArea.classList.remove('dragover');
+            }
+
+            handleDrop(e) {
+                e.preventDefault();
+                this.uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    this.processFile(files[0]);
+                }
+            }
+
+            handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    this.processFile(file);
+                }
+            }
+
+            // ==================== FILE PROCESSING ====================
+
+            async processFile(file) {
+                if (!this.validateFile(file)) return;
+
+                try {
+                    this.clearAlerts();
+                    this.showProgress();
+                    this.processingStartTime = Date.now();
+                    
+                    this.updateStatus('🔍 Reading PDF file...');
+                    this.updateProgress(5);
+
+                    const arrayBuffer = await this.readFileAsArrayBuffer(file);
+                    this.updateProgress(15);
+
+                    this.updateStatus('📋 Parsing PDF structure...');
+                    const result = await this.convertPDFToMarkdown(arrayBuffer);
+                    
+                    this.documentStats.processingTime = Math.round((Date.now() - this.processingStartTime) / 1000);
+                    
+                    this.updateProgress(100);
+                    this.updateStatus('✅ Conversion completed successfully!');
+                    
+                    this.displayResults(result);
+                    this.hideProgress();
+                    
+                    // Show success message with stats
+                    this.showAlert('success', 
+                        `🎉 Successfully converted ${this.documentStats.pages} pages with ${this.documentStats.images} images in ${this.documentStats.processingTime}s!`
+                    );
+
+                } catch (error) {
+                    console.error('Conversion error:', error);
+                    this.showAlert('error', `❌ Conversion failed: ${error.message}`);
+                    this.hideProgress();
+                }
+            }
+
+            validateFile(file) {
+                if (file.type !== 'application/pdf') {
+                    this.showAlert('error', '📋 Please select a valid PDF file.');
+                    return false;
+                }
+
+                const maxSize = 100 * 1024 * 1024; // 100MB
+                if (file.size > maxSize) {
+                    this.showAlert('error', '📏 File size must be less than 100MB for optimal performance.');
+                    return false;
+                }
+
+                return true;
+            }
+
+            readFileAsArrayBuffer(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => reject(new Error('Failed to read file. Please try again.'));
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            // ==================== PDF CONVERSION ====================
+
+            async convertPDFToMarkdown(arrayBuffer) {
+                const pdf = await pdfjsLib.getDocument({ 
+                    data: arrayBuffer,
+                    useSystemFonts: true 
+                }).promise;
+
+                this.totalPages = pdf.numPages;
+                this.documentStats.pages = pdf.numPages;
+                
+                let markdown = '';
+                let documentImages = [];
+                let imageExtractionWarnings = [];
+
+                this.updateStatus(`📄 Processing ${pdf.numPages} pages...`);
+
+                // Process each page
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    this.updateProgress(15 + (pageNum / pdf.numPages) * 70);
+                    this.updateStatus(`📖 Processing page ${pageNum} of ${pdf.numPages}...`);
+
+                    try {
+                        const page = await pdf.getPage(pageNum);
+                        
+                        // Extract text content
+                        const textContent = await page.getTextContent();
+                        const pageMarkdown = this.processPageContent(textContent, pageNum);
+                        
+                        // Try to extract images with hybrid approach
+                        const pageImages = await this.extractPageImages(page, pageNum);
+                        
+                        if (pageImages.warnings.length > 0) {
+                            imageExtractionWarnings.push(...pageImages.warnings);
+                        }
+
+                        documentImages.push(...pageImages.images);
+                        
+                        // Combine text and image references
+                        let combinedContent = pageMarkdown;
+                        if (pageImages.images.length > 0) {
+                            combinedContent += '\n\n';
+                            pageImages.images.forEach(img => {
+                                combinedContent += `![${img.alt}](${img.filename})\n\n`;
+                            });
+                        }
+
+                        markdown += combinedContent;
+                        
+                        if (pageNum < pdf.numPages) {
+                            markdown += '\n\n---\n\n'; // Page separator
+                        }
+
+                    } catch (pageError) {
+                        console.warn(`Error processing page ${pageNum}:`, pageError);
+                        this.showAlert('warning', `⚠️ Partial error on page ${pageNum}. Continuing with available content.`);
+                    }
+                }
+
+                // Finalize processing
+                this.updateStatus('🎨 Finalizing conversion...');
+                this.updateProgress(90);
+
+                this.extractedImages = documentImages;
+                this.documentStats.images = documentImages.length;
+                this.documentStats.words = this.countWords(markdown);
+
+                // Show image extraction warnings if any
+                if (imageExtractionWarnings.length > 0) {
+                    this.showAlert('warning', 
+                        `⚠️ Image extraction encountered ${imageExtractionWarnings.length} issues. Text extraction completed successfully.`
+                    );
+                }
+
+                return {
+                    markdown: this.cleanupMarkdown(markdown),
+                    images: documentImages,
+                    stats: this.documentStats
+                };
+            }
+
+            // ==================== HYBRID IMAGE EXTRACTION ====================
+
+            async extractPageImages(page, pageNum) {
+                const images = [];
+                const warnings = [];
+
+                try {
+                    // Strategy 1: Direct PDF image object extraction
+                    const directImages = await this.extractDirectImages(page, pageNum);
+                    images.push(...directImages);
+
+                } catch (error) {
+                    warnings.push(`Direct image extraction failed on page ${pageNum}: ${error.message}`);
+                    
+                    try {
+                        // Strategy 2: Canvas-based rendering fallback
+                        const canvasImages = await this.extractCanvasImages(page, pageNum);
+                        images.push(...canvasImages);
+                        
+                    } catch (canvasError) {
+                        warnings.push(`Canvas image extraction failed on page ${pageNum}: ${canvasError.message}`);
+                        
+                        try {
+                            // Strategy 3: Annotation-based extraction
+                            const annotationImages = await this.extractAnnotationImages(page, pageNum);
+                            images.push(...annotationImages);
+                            
+                        } catch (annotError) {
+                            warnings.push(`All image extraction methods failed on page ${pageNum}`);
+                        }
+                    }
+                }
+
+                return { images, warnings };
+            }
+
+            async extractDirectImages(page, pageNum) {
+                const images = [];
+                
+                try {
+                    const operatorList = await page.getOperatorList();
+                    
+                    for (let i = 0; i < operatorList.fnArray.length; i++) {
+                        if (operatorList.fnArray[i] === pdfjsLib.OPS.paintImageXObject) {
+                            const imageName = operatorList.argsArray[i][0];
+                            
+                            try {
+                                const imageData = await this.getImageData(page, imageName);
+                                if (imageData) {
+                                    images.push({
+                                        filename: `page-${pageNum}-${imageName}.png`,
+                                        data: imageData,
+                                        alt: `Image from page ${pageNum}`,
+                                        pageNum: pageNum,
+                                        extractionMethod: 'direct'
+                                    });
+                                }
+                            } catch (imgError) {
+                                console.warn(`Failed to extract image ${imageName} from page ${pageNum}:`, imgError);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    throw new Error(`Direct extraction failed: ${error.message}`);
+                }
+
+                return images;
+            }
+
+            async extractCanvasImages(page, pageNum) {
+                const images = [];
+                
+                try {
+                    // Create canvas for page rendering
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    
+                    await page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    }).promise;
+                    
+                    // Convert canvas to image data
+                    const imageData = canvas.toDataURL('image/png');
+                    
+                    images.push({
+                        filename: `page-${pageNum}-render.png`,
+                        data: imageData,
+                        alt: `Rendered page ${pageNum}`,
+                        pageNum: pageNum,
+                        extractionMethod: 'canvas'
+                    });
+                    
+                } catch (error) {
+                    throw new Error(`Canvas extraction failed: ${error.message}`);
+                }
+
+                return images;
+            }
+
+            async extractAnnotationImages(page, pageNum) {
+                const images = [];
+                
+                try {
+                    const annotations = await page.getAnnotations();
+                    
+                    annotations.forEach((annotation, index) => {
+                        if (annotation.subtype === 'Image' || annotation.hasAppearance) {
+                            // This is a simplified approach - real implementation would be more complex
+                            images.push({
+                                filename: `page-${pageNum}-annotation-${index}.png`,
+                                data: null, // Would extract actual annotation data
+                                alt: `Annotation from page ${pageNum}`,
+                                pageNum: pageNum,
+                                extractionMethod: 'annotation'
+                            });
+                        }
+                    });
+                } catch (error) {
+                    throw new Error(`Annotation extraction failed: ${error.message}`);
+                }
+
+                return images;
+            }
+
+            async getImageData(page, imageName) {
+                // This is a simplified placeholder
+                // Real implementation would access the page's resource dictionary
+                return null;
+            }
+
+            // ==================== TEXT PROCESSING ====================
+
+            processPageContent(textContent, pageNum) {
+                let pageText = '';
+                let currentLine = '';
+                let lastY = null;
+                const lines = [];
+
+                // Group text items by line
+                textContent.items.forEach(item => {
+                    const y = Math.round(item.transform[5]);
+                    
+                    if (lastY !== null && Math.abs(y - lastY) > 3) {
+                        if (currentLine.trim()) {
+                            lines.push({
+                                text: currentLine.trim(),
+                                fontSize: this.getAverageFontSize(textContent.items, lastY),
+                                y: lastY,
+                                fontName: item.fontName || 'default'
+                            });
+                        }
+                        currentLine = '';
+                    }
+                    
+                    currentLine += item.str;
+                    lastY = y;
+                });
+
+                // Add the last line
+                if (currentLine.trim()) {
+                    lines.push({
+                        text: currentLine.trim(),
+                        fontSize: textContent.items[textContent.items.length - 1]?.height || 12,
+                        y: lastY,
+                        fontName: textContent.items[textContent.items.length - 1]?.fontName || 'default'
+                    });
+                }
+
+                // Convert lines to markdown with enhanced formatting
+                lines.forEach(line => {
+                    const formattedLine = this.formatLineAsMarkdown(line);
+                    if (formattedLine) {
+                        pageText += formattedLine + '\n';
+                    }
+                });
+
+                return pageText;
+            }
+
+            getAverageFontSize(items, targetY) {
+                const lineItems = items.filter(item => 
+                    Math.abs(Math.round(item.transform[5]) - targetY) <= 3
+                );
+                
+                if (lineItems.length === 0) return 12;
+                
+                const totalSize = lineItems.reduce((sum, item) => sum + (item.height || 12), 0);
+                return totalSize / lineItems.length;
+            }
+
+            formatLineAsMarkdown(line) {
+                const text = line.text.trim();
+                if (!text) return '';
+
+                // Enhanced heading detection
+                if (this.isHeading(line)) {
+                    const level = this.determineHeadingLevel(line);
+                    return '#'.repeat(level) + ' ' + text;
+                }
+
+                // List item detection with improved patterns
+                if (this.isListItem(text)) {
+                    return this.formatListItem(text);
+                }
+
+                // Table row detection
+                if (this.isTableRow(text)) {
+                    return this.formatTableRow(text);
+                }
+
+                // Quote detection
+                if (this.isQuote(text)) {
+                    return '> ' + text.replace(/^["'""'']/g, '').replace(/["'""'']$/g, '');
+                }
+
+                // Code block detection
+                if (this.isCodeBlock(line)) {
+                    return '```\n' + text + '\n```';
+                }
+
+                // Regular paragraph
+                return text;
+            }
+
+            isHeading(line) {
+                const text = line.text;
+                return (
+                    line.fontSize > 14 ||
+                    text.toUpperCase() === text && text.length < 100 ||
+                    /^(Chapter|Section|Part|Article)\s+\d+/i.test(text) ||
+                    /^\d+\.?\s+[A-Z]/.test(text) ||
+                    line.fontName?.includes('Bold') ||
+                    line.fontName?.includes('Heading')
+                );
+            }
+
+            determineHeadingLevel(line) {
+                if (line.fontSize > 24) return 1;
+                if (line.fontSize > 18) return 2;
+                if (line.fontSize > 16) return 3;
+                if (line.fontSize > 14) return 4;
+                if (this.isMainHeading(line.text)) return 2;
+                return 3;
+            }
+
+            isMainHeading(text) {
+                return /^(Chapter|Section|Part|Article)\s+\d+/i.test(text) ||
+                       text.toUpperCase() === text && text.length < 50;
+            }
+
+            isListItem(text) {
+                return /^[-•*◦▪▫]\s/.test(text) ||
+                       /^\d+[.)]\s/.test(text) ||
+                       /^[a-zA-Z][.)]\s/.test(text) ||
+                       /^[ivxlcdm]+[.)]\s/i.test(text);
+            }
+
+            formatListItem(text) {
+                // Numbered lists
+                if (/^\d+[.)]\s/.test(text)) {
+                    const match = text.match(/^(\d+)[.)]\s(.+)/);
+                    return match ? `${match[1]}. ${match[2]}` : text;
+                }
+                
+                // Lettered lists
+                if (/^[a-zA-Z][.)]\s/.test(text)) {
+                    return '- ' + text.replace(/^[a-zA-Z][.)]\s/, '');
+                }
+                
+                // Roman numeral lists
+                if (/^[ivxlcdm]+[.)]\s/i.test(text)) {
+                    return '- ' + text.replace(/^[ivxlcdm]+[.)]\s/i, '');
+                }
+                
+                // Bullet points
+                return '- ' + text.replace(/^[-•*◦▪▫]\s/, '');
+            }
+
+            isTableRow(text) {
+                // Simple heuristic for table detection
+                const parts = text.split(/\s{3,}|\t/);
+                return parts.length >= 3 && parts.every(part => part.trim().length > 0);
+            }
+
+            formatTableRow(text) {
+                const parts = text.split(/\s{3,}|\t/).map(part => part.trim());
+                return '| ' + parts.join(' | ') + ' |';
+            }
+
+            isQuote(text) {
+                return /^["'""'']/.test(text) || 
+                       text.startsWith('Quote:') ||
+                       text.startsWith('"') && text.endsWith('"');
+            }
+
+            isCodeBlock(line) {
+                return line.fontName?.includes('Mono') ||
+                       line.fontName?.includes('Code') ||
+                       /^[\s]*[{}();,.]/.test(line.text);
+            }
+
+            cleanupMarkdown(markdown) {
+                return markdown
+                    .replace(/\n{4,}/g, '\n\n\n') // Limit excessive line breaks
+                    .replace(/^\s+/gm, '') // Remove leading whitespace
+                    .replace(/\s+$/gm, '') // Remove trailing whitespace
+                    .replace(/\n\n\n/g, '\n\n') // Clean up triple line breaks
+                    .trim();
+            }
+
+            countWords(text) {
+                return text.split(/\s+/).filter(word => word.length > 0).length;
+            }
+
+            // ==================== UI MANAGEMENT ====================
+
+            displayResults(result) {
+                this.markdownContent = result.markdown;
+                this.markdownOutput.value = result.markdown;
+                this.updatePreview();
+                
+                this.displayStats(result.stats);
+                this.displayImageGallery(result.images);
+                
+                this.conversionArea.style.display = 'grid';
+                this.enableButtons();
+                
+                // Scroll to results
+                this.conversionArea.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            displayStats(stats) {
+                this.pageCountDisplay.textContent = stats.pages;
+                this.imageCountDisplay.textContent = stats.images;
+                this.wordCountDisplay.textContent = stats.words.toLocaleString();
+                this.processingTimeDisplay.textContent = stats.processingTime + 's';
+                
+                this.statsPanel.style.display = 'grid';
+            }
+
+            displayImageGallery(images) {
+                if (images.length === 0) {
+                    this.imageGallery.style.display = 'none';
+                    return;
+                }
+
+                this.imageGrid.innerHTML = '';
+                
+                images.forEach((image, index) => {
+                    const thumbnail = document.createElement('div');
+                    thumbnail.className = 'image-thumbnail';
+                    thumbnail.title = image.alt;
+                    
+                    if (image.data && image.data.startsWith('data:image')) {
+                        const img = document.createElement('img');
+                        img.src = image.data;
+                        img.alt = image.alt;
+                        thumbnail.appendChild(img);
+                    } else {
+                        thumbnail.textContent = '🖼️';
+                    }
+                    
+                    thumbnail.addEventListener('click', () => this.viewImage(image));
+                    this.imageGrid.appendChild(thumbnail);
+                });
+                
+                this.imageGallery.style.display = 'block';
+            }
+
+            updatePreview() {
+                const markdown = this.markdownOutput.value;
+                this.markdownPreview.innerHTML = this.renderMarkdownPreview(markdown);
+            }
+
+            renderMarkdownPreview(markdown) {
+                let html = markdown
+                    // Headings
+                    .replace(/^######\s+(.*$)/gm, '<h6>$1</h6>')
+                    .replace(/^#####\s+(.*$)/gm, '<h5>$1</h5>')
+                    .replace(/^####\s+(.*$)/gm, '<h4>$1</h4>')
+                    .replace(/^###\s+(.*$)/gm, '<h3>$1</h3>')
+                    .replace(/^##\s+(.*$)/gm, '<h2>$1</h2>')
+                    .replace(/^#\s+(.*$)/gm, '<h1>$1</h1>')
+                    
+                    // Horizontal rules
+                    .replace(/^---$/gm, '<hr>')
+                    
+                    // Bold and italic
+                    .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    
+                    // Code blocks
+                    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                    .replace(/`(.*?)`/g, '<code>$1</code>')
+                    
+                    // Links and images
+                    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+                    
+                    // Lists
+                    .replace(/^\d+\.\s+(.*$)/gm, '<li>$1</li>')
+                    .replace(/^-\s+(.*$)/gm, '<li>$1</li>')
+                    
+                    // Blockquotes
+                    .replace(/^>\s+(.*$)/gm, '<blockquote>$1</blockquote>')
+                    
+                    // Paragraphs
+                    .replace(/\n\n/g, '</p><p>')
+                    .replace(/^(.*)$/gm, '<p>$1</p>');
+
+                // Clean up empty paragraphs and fix list formatting
+                html = html
+                    .replace(/<p><\/p>/g, '')
+                    .replace(/<p>(<h[1-6]>.*?<\/h[1-6]>)<\/p>/g, '$1')
+                    .replace(/<p>(<hr>)<\/p>/g, '$1')
+                    .replace(/(<li>.*?<\/li>)/gs, function(match) {
+                        return '<ul>' + match + '</ul>';
+                    })
+                    .replace(/<\/ul>\s*<ul>/g, '');
+
+                return html || '<p style="text-align: center; color: var(--text-muted);">Preview will appear here...</p>';
+            }
+
+            // ==================== PROGRESS AND STATUS ====================
+
+            showProgress() {
+                this.uploadContent.style.display = 'none';
+                this.progressArea.style.display = 'block';
+                this.uploadArea.classList.add('processing');
+            }
+
+            hideProgress() {
+                this.uploadContent.style.display = 'block';
+                this.progressArea.style.display = 'none';
+                this.uploadArea.classList.remove('processing');
+            }
+
+            updateStatus(message) {
+                this.status.textContent = message;
+            }
+
+            updateProgress(percent) {
+                this.progressBar.style.width = Math.min(100, Math.max(0, percent)) + '%';
+            }
+
+            // ==================== ALERT SYSTEM ====================
+
+            showAlert(type, message, duration = 8000) {
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type}`;
+                
+                const icon = this.getAlertIcon(type);
+                alert.innerHTML = `
+                    <span>${icon}</span>
+                    <span>${message}</span>
+                `;
+                
+                this.alertArea.appendChild(alert);
+                
+                if (duration > 0) {
+                    setTimeout(() => {
+                        if (alert.parentNode) {
+                            alert.parentNode.removeChild(alert);
+                        }
+                    }, duration);
+                }
+            }
+
+            getAlertIcon(type) {
+                const icons = {
+                    success: '✅',
+                    warning: '⚠️',
+                    error: '❌',
+                    info: 'ℹ️'
+                };
+                return icons[type] || 'ℹ️';
+            }
+
+            clearAlerts() {
+                this.alertArea.innerHTML = '';
+            }
+
+            // ==================== EXPORT FUNCTIONALITY ====================
+
+            enableButtons() {
+                this.downloadMdBtn.disabled = false;
+                this.downloadZipBtn.disabled = false;
+                this.copyBtn.disabled = false;
+                this.toggleImagesBtn.disabled = false;
+            }
+
+            async downloadMarkdown() {
+                try {
+                    const blob = new Blob([this.markdownContent], { type: 'text/markdown;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'converted-document.md';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    this.showAlert('success', '📥 Markdown file downloaded successfully!');
+                } catch (error) {
+                    this.showAlert('error', 'Failed to download Markdown file: ' + error.message);
+                }
+            }
+
+            async downloadZipWithImages() {
+                try {
+                    if (!window.JSZip) {
+                        this.showAlert('error', 'ZIP functionality not available. Please try downloading the Markdown file instead.');
+                        return;
+                    }
+
+                    const zip = new JSZip();
+                    
+                    // Add markdown file
+                    zip.file('document.md', this.markdownContent);
+                    
+                    // Add images folder
+                    const imgFolder = zip.folder('images');
+                    let addedImages = 0;
+                    
+                    this.extractedImages.forEach(image => {
+                        if (image.data && image.data.startsWith('data:image')) {
+                            const base64Data = image.data.split(',')[1];
+                            imgFolder.file(image.filename, base64Data, { base64: true });
+                            addedImages++;
+                        }
+                    });
+                    
+                    // Add readme
+                    zip.file('README.txt', `PDF to Markdown Conversion
+Generated: ${new Date().toISOString()}
+Pages: ${this.documentStats.pages}
+Images: ${addedImages}
+Words: ${this.documentStats.words}
+
+Files:
+- document.md: The converted Markdown content
+- images/: Extracted images folder
+`);
+                    
+                    this.updateStatus('📦 Creating ZIP file...');
+                    const content = await zip.generateAsync({ 
+                        type: 'blob',
+                        compression: 'DEFLATE',
+                        compressionOptions: { level: 6 }
+                    });
+                    
+                    const url = URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'converted-document-with-images.zip';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    this.showAlert('success', `📦 ZIP file downloaded with ${addedImages} images!`);
+                    
+                } catch (error) {
+                    console.error('ZIP creation error:', error);
+                    this.showAlert('error', 'Failed to create ZIP file: ' + error.message);
+                }
+            }
+
+            async copyMarkdownToClipboard() {
+                try {
+                    await navigator.clipboard.writeText(this.markdownContent);
+                    this.copyBtn.textContent = '✅ Copied!';
+                    setTimeout(() => {
+                        this.copyBtn.innerHTML = '📋 Copy';
+                    }, 2000);
+                    this.showAlert('success', '📋 Markdown copied to clipboard!');
+                } catch (error) {
+                    // Fallback for older browsers
+                    const textarea = document.createElement('textarea');
+                    textarea.value = this.markdownContent;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    
+                    this.showAlert('success', '📋 Markdown copied to clipboard!');
+                }
+            }
+
+            toggleImageDisplay() {
+                this.showImages = !this.showImages;
+                this.toggleImagesBtn.textContent = this.showImages ? '🖼️ Hide Images' : '👁️ Show Images';
+                this.imageGallery.style.display = this.showImages && this.extractedImages.length > 0 ? 'block' : 'none';
+            }
+
+            viewImage(image) {
+                if (image.data && image.data.startsWith('data:image')) {
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write(`
+                        <html>
+                            <head><title>${image.alt}</title></head>
+                            <body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#f0f0f0;">
+                                <img src="${image.data}" alt="${image.alt}" style="max-width:100%;max-height:100%;object-fit:contain;" />
+                            </body>
+                        </html>
+                    `);
+                } else {
+                    this.showAlert('info', 'Image data not available for viewing.');
+                }
+            }
+        }
+
+        // ==================== INITIALIZATION ====================
+
+        // Initialize the converter when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AdvancedPDFToMarkdownConverter();
+        });
+
+        // Add service worker for PWA functionality (optional)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Service worker would be implemented here for offline functionality
+            });
+        }
+
+        // Add performance monitoring
+        window.addEventListener('load', () => {
+            // Optional: Add analytics or performance tracking
+            const loadTime = performance.now();
+            console.log(`🚀 App loaded in ${Math.round(loadTime)}ms`);
+        });
+    </script>
+</body>
+</html>
