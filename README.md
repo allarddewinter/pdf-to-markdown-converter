@@ -1,5 +1,4 @@
-````markdown
-# � The Sacred Scroll Transcriber
+# 📜 The Sacred Scroll Transcriber
 
 > *"What have the Romans ever done for us? Well, apart from document conversion..."*  
 > Transform thy ancient PDF scrolls and stone tablet images into readable Markdown text using advanced OCR magic - all processed locally in thy browser for the protection of thy privacy, citizen!
@@ -113,5 +112,3 @@ MIT License - Use freely for the glory of the People's Front! (Not to be confuse
 
 *"Blessed are the PDFs, for they shall be transcribed!"*  
 *"What have the Romans ever done for OCR? Apart from... well, they didn't have OCR."*
-
-````
