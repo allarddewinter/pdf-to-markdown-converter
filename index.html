@@ -3,69 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF to Markdown Converter | Advanced Document Transformation</title>
+    <title>The Sacred Scroll Transcriber | By Order of the Ministry of Silly Scrolls</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Convert PDF documents to Markdown with advanced image extraction. Privacy-first, browser-based conversion with no uploads required.">
-    <meta name="keywords" content="PDF, Markdown, converter, document, transformation, privacy, browser">
-    <meta name="author" content="Allard de Winter">
+    <meta name="description" content="Transform thy ancient scrolls and papyri into readable text, citizen. No Romans required!">
+    <meta name="keywords" content="PDF, OCR, scrolls, papyrus, transcription, Romans, Life of Brian">
+    <meta name="author" content="Allard de Winter (Definitely not a Roman spy)">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="PDF to Markdown Converter">
-    <meta property="og:description" content="Transform PDF documents into clean Markdown with advanced image extraction">
+    <meta property="og:title" content="The Sacred Scroll Transcriber">
+    <meta property="og:description" content="What have the Romans ever done for document conversion?">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://allarddewinter.github.io/pdf-to-markdown-converter">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="PDF to Markdown Converter">
-    <meta name="twitter:description" content="Transform PDF documents into clean Markdown with advanced image extraction">
+    <meta name="twitter:title" content="The Sacred Scroll Transcriber">
+    <meta name="twitter:description" content="Blessed are the PDFs, for they shall be transcribed">
     
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📜</text></svg>">
     
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
+    <!-- Google Fonts for Authentic Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
     <style>
-        /* CSS Custom Properties for Theming */
+        /* CSS Custom Properties for Life of Brian Theming */
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --secondary-color: #64748b;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --error-color: #ef4444;
-            --background: #ffffff;
-            --surface: #f8fafc;
-            --surface-elevated: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --text-muted: #94a3b8;
-            --border: #e2e8f0;
-            --border-light: #f1f5f9;
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --radius: 0.5rem;
-            --radius-lg: 0.75rem;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            /* Desert color palette - dusty, weathered tones */
+            --ochre: #CC8500;
+            --sand: #C2B280;
+            --terracotta: #A0522D;
+            --dusty-brown: #8B7355;
+            --faded-purple: #6B46C1;
+            --tarnished-gold: #B8860B;
+            --stone-gray: #696969;
+            --papyrus: #F5F5DC;
+            --parchment: #FFEFD5;
+            --aged-white: #FAF0E6;
+            
+            /* Primary colors from the desert palette */
+            --primary-color: var(--ochre);
+            --primary-hover: var(--dusty-brown);
+            --secondary-color: var(--stone-gray);
+            --success-color: var(--tarnished-gold);
+            --warning-color: var(--terracotta);
+            --error-color: #CD5C5C;
+            
+            /* Surfaces with weathered textures */
+            --background: var(--papyrus);
+            --surface: var(--parchment);
+            --surface-elevated: var(--aged-white);
+            --text-primary: #2F1B14;
+            --text-secondary: var(--dusty-brown);
+            --text-muted: var(--stone-gray);
+            --border: var(--sand);
+            --border-light: #D2B48C;
+            
+            /* Shadows for depth but keeping that handmade feel */
+            --shadow: 3px 3px 6px rgba(139, 115, 85, 0.3);
+            --shadow-lg: 6px 6px 12px rgba(139, 115, 85, 0.4);
+            --radius: 2px;
+            --radius-lg: 4px;
+            --transition: all 0.3s ease-out;
+            
+            /* Typography - Classical and bureaucratic */
+            --font-heading: 'Cinzel Decorative', serif;
+            --font-body: 'Cinzel', serif;
+            --font-mono: 'Courier Prime', monospace;
         }
 
-        /* Dark Theme */
+        /* Dark theme (night in the desert) */
         @media (prefers-color-scheme: dark) {
             :root {
-                --primary-color: #3b82f6;
-                --primary-hover: #2563eb;
-                --background: #0f172a;
-                --surface: #1e293b;
-                --surface-elevated: #334155;
-                --text-primary: #f1f5f9;
-                --text-secondary: #cbd5e1;
-                --text-muted: #64748b;
-                --border: #334155;
-                --border-light: #475569;
+                --background: #2F1B14;
+                --surface: #3D2918;
+                --surface-elevated: #4A321F;
+                --text-primary: var(--aged-white);
+                --text-secondary: var(--sand);
+                --text-muted: var(--stone-gray);
+                --border: var(--dusty-brown);
+                --border-light: var(--terracotta);
             }
         }
 
@@ -77,54 +100,47 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
+            font-family: var(--font-body);
+            line-height: 1.7;
             color: var(--text-primary);
             background: var(--background);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(204, 133, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(160, 82, 45, 0.1) 0%, transparent 50%);
             transition: var(--transition);
             scroll-behavior: smooth;
+            position: relative;
+            min-height: 100vh;
         }
 
-        /* Utility Classes */
-        .visually-hidden {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
+        /* Add subtle texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(194, 178, 128, 0.03) 2px 4px),
+                repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(139, 115, 85, 0.02) 2px 4px);
+            pointer-events: none;
+            z-index: -1;
         }
 
         /* Container and Layout */
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem;
+            padding: 2rem;
         }
 
-        /* Header Styles */
+        /* Header Styles - Like a Roman proclamation */
         .header {
             text-align: center;
             margin-bottom: 3rem;
             background: var(--surface-elevated);
             padding: 3rem 2rem;
+            border: 3px solid var(--border);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-lg);
             position: relative;
             overflow: hidden;
         }
@@ -132,62 +148,89 @@
         .header::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            height: 8px;
+            background: linear-gradient(90deg, var(--ochre), var(--terracotta), var(--tarnished-gold));
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .header::after {
+            content: '⚔️ SPQR ⚔️';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: var(--font-body);
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--success-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: var(--font-heading);
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: var(--ochre);
+            text-shadow: 2px 2px 4px rgba(139, 115, 85, 0.3);
+            letter-spacing: 2px;
         }
 
         .header p {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            max-width: 600px;
+            margin-bottom: 2rem;
+            max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+            font-style: italic;
+            line-height: 1.8;
         }
 
+        /* Badges - Like official Roman seals */
         .badges {
             display: flex;
             justify-content: center;
             gap: 1rem;
             flex-wrap: wrap;
-            margin-top: 1.5rem;
+            margin-top: 2rem;
         }
 
         .badge {
             background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-secondary);
+            border: 2px solid var(--border);
+            padding: 0.8rem 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
             transition: var(--transition);
+            font-family: var(--font-body);
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .badge:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px) rotate(-1deg);
             box-shadow: var(--shadow);
+            border-color: var(--ochre);
         }
 
-        /* Upload Area Styles */
+        .badge::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, var(--ochre), var(--terracotta));
+            z-index: -1;
+            border-radius: 2px;
+        }
+
+        /* Upload Area - Like offering scrolls to the gods */
         .upload-area {
-            border: 2px dashed var(--border);
+            border: 3px dashed var(--border);
             border-radius: var(--radius-lg);
             padding: 3rem;
             text-align: center;
@@ -199,78 +242,100 @@
             overflow: hidden;
         }
 
-        .upload-area:hover {
-            border-color: var(--primary-color);
-            background: var(--surface-elevated);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 10px,
+                rgba(194, 178, 128, 0.1) 10px,
+                rgba(194, 178, 128, 0.1) 11px
+            );
+            pointer-events: none;
         }
 
-        .upload-area.dragover {
-            border-color: var(--primary-color);
+        .upload-area:hover {
+            border-color: var(--ochre);
             background: var(--surface-elevated);
-            transform: scale(1.02);
+            transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
 
         .upload-area.processing {
             border-color: var(--success-color);
             background: var(--surface-elevated);
+            animation: ancientspin 4s linear infinite;
+        }
+
+        @keyframes ancientspin {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(0.5deg) scale(1.002); }
+            50% { transform: rotate(0deg) scale(1.001); }
+            75% { transform: rotate(-0.5deg) scale(1.002); }
         }
 
         .upload-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: float 3s ease-in-out infinite;
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: ancientfloat 4s ease-in-out infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        @keyframes ancientfloat {
+            0%, 100% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
         }
 
         .upload-area h3 {
-            font-size: 1.5rem;
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            color: var(--ochre);
+            text-shadow: 1px 1px 2px rgba(139, 115, 85, 0.3);
         }
 
         .upload-area p {
             color: var(--text-secondary);
             margin-bottom: 1rem;
+            font-style: italic;
+            font-size: 1.1rem;
         }
 
         .file-input {
             display: none;
         }
 
-        /* Progress Styles */
+        /* Progress Styles - Like sand through an hourglass */
         .progress-container {
             margin: 2rem 0;
         }
 
         .status {
             text-align: center;
-            margin-bottom: 1rem;
-            font-weight: 500;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
             color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 1.1rem;
         }
 
         .progress {
             width: 100%;
-            height: 8px;
+            height: 12px;
             background: var(--border-light);
-            border-radius: 4px;
+            border: 2px solid var(--border);
+            border-radius: 0;
             overflow: hidden;
             position: relative;
         }
 
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            background: linear-gradient(90deg, var(--ochre), var(--tarnished-gold));
             width: 0%;
-            transition: width 0.3s ease;
+            transition: width 0.4s ease-out;
             position: relative;
         }
 
@@ -281,64 +346,67 @@
             left: 0;
             bottom: 0;
             right: 0;
-            background-image: linear-gradient(
+            background-image: repeating-linear-gradient(
                 45deg,
-                rgba(255, 255, 255, 0.2) 25%,
-                transparent 25%,
-                transparent 50%,
-                rgba(255, 255, 255, 0.2) 50%,
-                rgba(255, 255, 255, 0.2) 75%,
-                transparent 75%,
-                transparent
+                rgba(255, 255, 255, 0.2) 0,
+                rgba(255, 255, 255, 0.2) 10px,
+                transparent 10px,
+                transparent 20px
             );
-            background-size: 1rem 1rem;
-            animation: progress-stripes 1s linear infinite;
+            animation: progress-march 2s linear infinite;
         }
 
-        @keyframes progress-stripes {
+        @keyframes progress-march {
             0% { background-position: 0 0; }
-            100% { background-position: 1rem 0; }
+            100% { background-position: 20px 0; }
         }
 
-        /* Alert Styles */
+        /* Alert Styles - Proclamations and Decrees */
         .alert {
-            padding: 1rem 1.5rem;
+            padding: 1.5rem 2rem;
+            border: 2px solid;
             border-radius: var(--radius);
             margin: 1rem 0;
-            border-left: 4px solid;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            animation: slideIn 0.3s ease;
+            gap: 1rem;
+            animation: scrollUnroll 0.5s ease-out;
+            font-family: var(--font-body);
+            position: relative;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .alert::before {
+            content: '📜';
+            font-size: 1.5rem;
+        }
+
+        @keyframes scrollUnroll {
+            from { opacity: 0; transform: translateX(-20px) rotate(-2deg); }
+            to { opacity: 1; transform: translateX(0) rotate(0deg); }
         }
 
         .alert-warning {
-            background: rgba(245, 158, 11, 0.1);
-            border-color: var(--warning-color);
-            color: var(--warning-color);
+            background: rgba(160, 82, 45, 0.1);
+            border-color: var(--terracotta);
+            color: var(--terracotta);
         }
 
         .alert-error {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: var(--error-color);
-            color: var(--error-color);
+            background: rgba(205, 92, 92, 0.1);
+            border-color: #CD5C5C;
+            color: #CD5C5C;
         }
 
         .alert-success {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: var(--success-color);
-            color: var(--success-color);
+            background: rgba(184, 134, 11, 0.1);
+            border-color: var(--tarnished-gold);
+            color: var(--tarnished-gold);
         }
 
         .alert-info {
-            background: rgba(37, 99, 235, 0.1);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+            background: rgba(204, 133, 0, 0.1);
+            border-color: var(--ochre);
+            color: var(--ochre);
         }
 
         /* Conversion Area */
@@ -355,22 +423,32 @@
             }
         }
 
-        /* Output Panel Styles */
+        /* Output Panel Styles - Ancient scrolls */
         .output-panel {
             background: var(--surface-elevated);
+            border: 3px solid var(--border);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-lg);
             height: 700px;
             display: flex;
             flex-direction: column;
-            border: 1px solid var(--border);
             overflow: hidden;
+            position: relative;
+        }
+
+        .output-panel::before {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border: 1px solid rgba(194, 178, 128, 0.3);
+            pointer-events: none;
+            z-index: 1;
         }
 
         .panel-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            font-weight: 600;
+            padding: 1.2rem 1.8rem;
+            border-bottom: 2px solid var(--border);
+            font-weight: 700;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -378,6 +456,9 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            font-family: var(--font-heading);
+            color: var(--ochre);
+            text-shadow: 1px 1px 2px rgba(139, 115, 85, 0.2);
         }
 
         .panel-content {
@@ -386,91 +467,107 @@
             overflow: auto;
             font-family: var(--font-mono);
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
+            position: relative;
         }
 
         .code-editor {
             width: 100%;
             height: 100%;
-            padding: 1.5rem;
+            padding: 2rem;
             border: none;
             background: var(--background);
             color: var(--text-primary);
             font-family: var(--font-mono);
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
             resize: none;
             outline: none;
         }
 
         .markdown-preview {
-            padding: 1.5rem;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 2rem;
+            font-family: var(--font-body);
             background: var(--background);
             height: 100%;
             overflow-y: auto;
         }
 
-        /* Markdown Preview Styles */
+        /* Markdown Preview Styles - Illuminated manuscript style */
         .markdown-preview h1,
         .markdown-preview h2,
         .markdown-preview h3,
         .markdown-preview h4,
         .markdown-preview h5,
         .markdown-preview h6 {
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            line-height: 1.25;
+            margin-top: 2.5rem;
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+            color: var(--ochre);
+            line-height: 1.3;
+            font-family: var(--font-heading);
+            text-shadow: 1px 1px 2px rgba(139, 115, 85, 0.2);
         }
 
-        .markdown-preview h1 { font-size: 2rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
-        .markdown-preview h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25rem; }
-        .markdown-preview h3 { font-size: 1.25rem; }
-        .markdown-preview h4 { font-size: 1.125rem; }
-        .markdown-preview h5 { font-size: 1rem; }
-        .markdown-preview h6 { font-size: 0.875rem; }
+        .markdown-preview h1 { 
+            font-size: 2.2rem; 
+            border-bottom: 3px solid var(--border); 
+            padding-bottom: 0.8rem; 
+            letter-spacing: 2px;
+        }
+        .markdown-preview h2 { 
+            font-size: 1.8rem; 
+            border-bottom: 2px solid var(--border); 
+            padding-bottom: 0.5rem; 
+        }
+        .markdown-preview h3 { font-size: 1.5rem; }
+        .markdown-preview h4 { font-size: 1.3rem; }
+        .markdown-preview h5 { font-size: 1.1rem; }
+        .markdown-preview h6 { font-size: 1rem; }
 
         .markdown-preview p {
-            margin-bottom: 1rem;
+            margin-bottom: 1.3rem;
             color: var(--text-primary);
+            text-align: justify;
+            line-height: 1.8;
         }
 
         .markdown-preview ul,
         .markdown-preview ol {
-            margin-bottom: 1rem;
-            padding-left: 2rem;
+            margin-bottom: 1.3rem;
+            padding-left: 2.5rem;
         }
 
         .markdown-preview li {
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
         }
 
         .markdown-preview blockquote {
-            border-left: 4px solid var(--border);
-            padding-left: 1rem;
-            margin: 1rem 0;
+            border-left: 4px solid var(--ochre);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
             color: var(--text-secondary);
             font-style: italic;
+            background: rgba(204, 133, 0, 0.05);
+            padding: 1rem 1.5rem;
         }
 
         .markdown-preview code {
             background: var(--surface);
-            padding: 0.125rem 0.25rem;
-            border-radius: 0.25rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: var(--radius);
             font-family: var(--font-mono);
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             border: 1px solid var(--border);
         }
 
         .markdown-preview pre {
             background: var(--surface);
-            padding: 1rem;
+            padding: 1.5rem;
             border-radius: var(--radius);
             overflow-x: auto;
-            margin: 1rem 0;
-            border: 1px solid var(--border);
+            margin: 1.5rem 0;
+            border: 2px solid var(--border);
         }
 
         .markdown-preview pre code {
@@ -482,22 +579,23 @@
         .markdown-preview table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1rem 0;
-            border: 1px solid var(--border);
+            margin: 1.5rem 0;
+            border: 2px solid var(--border);
             border-radius: var(--radius);
             overflow: hidden;
         }
 
         .markdown-preview th,
         .markdown-preview td {
-            padding: 0.75rem;
+            padding: 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border);
         }
 
         .markdown-preview th {
             background: var(--surface);
-            font-weight: 600;
+            font-weight: 700;
+            color: var(--ochre);
         }
 
         .markdown-preview img {
@@ -505,141 +603,206 @@
             height: auto;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            margin: 1rem 0;
+            margin: 1.5rem 0;
+            border: 2px solid var(--border);
         }
 
-        /* Button Styles */
+        /* Button Styles - Ancient Roman controls */
         .btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
+            background: var(--ochre);
+            color: var(--aged-white);
+            border: 2px solid var(--dusty-brown);
+            padding: 0.8rem 1.8rem;
             border-radius: var(--radius);
             cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
+            font-size: 0.9rem;
+            font-weight: 700;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.8rem;
             text-decoration: none;
+            font-family: var(--font-body);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Checkbox Styling */
+        .panel-header input[type="checkbox"] {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--ochre);
+            background: var(--surface);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .panel-header input[type="checkbox"]:checked {
+            background: var(--ochre);
+        }
+
+        .panel-header input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: -2px;
+            left: 1px;
+            color: var(--aged-white);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .panel-header label {
+            color: var(--text-secondary);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
         }
 
         .btn:hover:not(:disabled) {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
+            background: var(--dusty-brown);
+            transform: translateY(-2px) rotate(-0.5deg);
             box-shadow: var(--shadow);
         }
 
+        .btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
         .btn:active:not(:disabled) {
-            transform: translateY(0);
+            transform: translateY(0) rotate(0deg);
         }
 
         .btn:disabled {
             background: var(--text-muted);
+            color: var(--surface);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+            border-color: var(--text-muted);
         }
 
         .btn-secondary {
             background: var(--surface);
             color: var(--text-primary);
-            border: 1px solid var(--border);
+            border-color: var(--border);
         }
 
         .btn-secondary:hover:not(:disabled) {
             background: var(--surface-elevated);
-            border-color: var(--primary-color);
+            border-color: var(--ochre);
         }
 
         .btn-success {
-            background: var(--success-color);
+            background: var(--tarnished-gold);
         }
 
         .btn-warning {
-            background: var(--warning-color);
+            background: var(--terracotta);
+        }
+
+        .btn-success, .btn-warning {
+            border-color: var(--dusty-brown);
         }
 
         .btn-small {
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.2rem;
             font-size: 0.8rem;
         }
 
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 4rem;
-            padding: 2rem;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .footer a {
-            color: var(--primary-color);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* Stats Panel */
+        /* Stats Panel - Census Records */
         .stats-panel {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
             margin: 2rem 0;
-            padding: 1.5rem;
+            padding: 2rem;
             background: var(--surface-elevated);
+            border: 3px solid var(--border);
             border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .stats-panel::before {
+            content: '📊 CENSUS ROMANUS 📊';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface-elevated);
+            padding: 0 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: var(--font-body);
+            letter-spacing: 2px;
         }
 
         .stat-item {
             text-align: center;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            background: var(--surface);
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--ochre);
             display: block;
+            font-family: var(--font-heading);
+            text-shadow: 2px 2px 4px rgba(139, 115, 85, 0.2);
         }
 
         .stat-label {
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            margin-top: 0.25rem;
+            margin-top: 0.5rem;
+            font-family: var(--font-body);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* Image Gallery */
+        /* Image Gallery - Fresco Collection */
         .image-gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
         }
 
         .image-thumbnail {
             aspect-ratio: 1;
             background: var(--surface);
-            border: 1px solid var(--border);
+            border: 3px solid var(--border);
             border-radius: var(--radius);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 2.5rem;
             cursor: pointer;
             transition: var(--transition);
             overflow: hidden;
+            position: relative;
         }
 
         .image-thumbnail:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow);
+            transform: scale(1.05) rotate(1deg);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--ochre);
         }
 
         .image-thumbnail img {
@@ -648,33 +811,72 @@
             object-fit: cover;
         }
 
-        /* Loading Animation */
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: currentColor;
-            animation: spin 1s ease-in-out infinite;
+        /* Footer - Imperial Decree */
+        .footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 2px solid var(--border);
+            font-family: var(--font-body);
+            background: var(--surface);
+            position: relative;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .footer::before {
+            content: '⚔️ AVE CAESAR ⚔️';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            padding: 0 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--ochre);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+            color: var(--tarnished-gold);
+        }
+
+        /* Loading Animation - Ancient Hourglass */
+        .loading-spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(204, 133, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--ochre);
+            animation: ancientSpin 1.2s ease-in-out infinite;
+        }
+
+        @keyframes ancientSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
         }
 
         /* Responsive Design */
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             .container {
-                padding: 0.5rem;
+                padding: 1rem;
             }
 
             .header {
-                padding: 2rem 1rem;
+                padding: 2rem 1.5rem;
             }
 
             .header h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
 
             .upload-area {
@@ -682,12 +884,12 @@
             }
 
             .badges {
-                gap: 0.5rem;
+                gap: 0.8rem;
             }
 
             .badge {
                 font-size: 0.8rem;
-                padding: 0.375rem 0.75rem;
+                padding: 0.6rem 1rem;
             }
 
             .output-panel {
@@ -695,12 +897,12 @@
             }
 
             .btn {
-                padding: 0.5rem 1rem;
+                padding: 0.6rem 1.2rem;
                 font-size: 0.8rem;
             }
         }
 
-        /* Accessibility */
+        /* Accessibility - But with style */
         @media (prefers-reduced-motion: reduce) {
             * {
                 animation-duration: 0.01ms !important;
@@ -709,14 +911,14 @@
             }
         }
 
-        /* Focus Styles */
+        /* Focus Styles - Roman seal of approval */
         .btn:focus-visible,
         .upload-area:focus-visible {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
+            outline: 3px solid var(--ochre);
+            outline-offset: 3px;
         }
 
-        /* Print Styles */
+        /* Print Styles - For official documents */
         @media print {
             .header,
             .upload-area,
@@ -732,7 +934,12 @@
             .output-panel {
                 height: auto;
                 box-shadow: none;
-                border: 1px solid #000;
+                border: 2px solid #000;
+            }
+
+            body {
+                background: white;
+                color: black;
             }
         }
     </style>
@@ -741,28 +948,28 @@
     <div class="container">
         <!-- Header Section -->
         <header class="header">
-            <h1>🔄 PDF to Markdown Converter</h1>
-            <p>Transform your PDF documents into clean, structured Markdown with advanced image extraction - all processed locally in your browser for complete privacy.</p>
+            <h1>📜 The Sacred Scroll Transcriber</h1>
+            <p>"What have the Romans ever done for us? Well, apart from document conversion..." Extract text from thy ancient scrolls and papyri using advanced optical character recognition - all processed locally for the protection of thy privacy, citizen.</p>
             <div class="badges">
-                <span class="badge">🔒 Privacy First</span>
-                <span class="badge">📱 Mobile Friendly</span>
-                <span class="badge">⚡ Lightning Fast</span>
-                <span class="badge">🖼️ Image Extraction</span>
-                <span class="badge">🎯 Smart Formatting</span>
+                <span class="badge">🔒 No Roman Spies</span>
+                <span class="badge">📱 Portable as a Biggus</span>
+                <span class="badge">⚡ Powered by Incontinentia</span>
+                <span class="badge">🖼️ Frescoes Welcome</span>
+                <span class="badge">🎯 Blessed Are the Texts</span>
             </div>
         </header>
 
         <!-- Upload Area -->
-        <div class="upload-area" id="uploadArea" role="button" tabindex="0" aria-label="Upload PDF file">
+        <div class="upload-area" id="uploadArea" role="button" tabindex="0" aria-label="Deposit thy scrolls here, citizen">
             <div id="uploadContent">
-                <div class="upload-icon">📄</div>
-                <h3>Drop your PDF file here or click to browse</h3>
-                <p>Supports text-based PDF files up to 100MB with intelligent image extraction</p>
-                <input type="file" id="fileInput" class="file-input" accept=".pdf" aria-label="Choose PDF file">
+                <div class="upload-icon">📜</div>
+                <h3>Place thy sacred documents here, or clicketh to browse</h3>
+                <p>Accepts papyrus scrolls (PDFs) and stone tablets with hieroglyphics (images with OCR)</p>
+                <input type="file" id="fileInput" class="file-input" accept=".pdf,.jpg,.jpeg,.png,.gif" aria-label="Choose thy ancient texts">
             </div>
             <div id="progressArea" style="display: none;">
                 <div class="progress-container">
-                    <div class="status" id="status">Initializing...</div>
+                    <div class="status" id="status">Consulting the oracles...</div>
                     <div class="progress">
                         <div class="progress-bar" id="progressBar"></div>
                     </div>
@@ -777,11 +984,11 @@
         <div class="stats-panel" id="statsPanel" style="display: none;">
             <div class="stat-item">
                 <span class="stat-value" id="pageCount">0</span>
-                <div class="stat-label">Pages</div>
+                <div class="stat-label">Scrolls</div>
             </div>
             <div class="stat-item">
                 <span class="stat-value" id="imageCount">0</span>
-                <div class="stat-label">Images</div>
+                <div class="stat-label">Frescoes</div>
             </div>
             <div class="stat-item">
                 <span class="stat-value" id="wordCount">0</span>
@@ -798,13 +1005,16 @@
             <!-- Markdown Output Panel -->
             <div class="output-panel">
                 <div class="panel-header">
-                    <span>📝 Markdown Output</span>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-small" id="downloadMdBtn" disabled aria-label="Download Markdown file">
-                            ⬇️ Download MD
+                    <span>📝 Transcribed Scrolls</span>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <button class="btn btn-small" id="toggleDisclaimerBtn" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;">
+                            🔍 Hide OCR Info
                         </button>
-                        <button class="btn btn-secondary btn-small" id="downloadZipBtn" disabled aria-label="Download ZIP with images">
-                            📦 ZIP
+                        <button class="btn btn-small" id="downloadMdBtn" disabled aria-label="Download thy markdown scroll">
+                            ⬇️ Download Scroll
+                        </button>
+                        <button class="btn btn-secondary btn-small" id="downloadZipBtn" disabled aria-label="Download treasure chest with frescoes">
+                            📦 Treasure Chest
                         </button>
                     </div>
                 </div>
@@ -812,9 +1022,9 @@
                     <textarea 
                         class="code-editor" 
                         id="markdownOutput" 
-                        placeholder="Your converted Markdown will appear here..."
+                        placeholder="Thy transcribed wisdom shall appear here, as if by Roman magic..."
                         readonly
-                        aria-label="Markdown output"
+                        aria-label="Transcribed content"
                     ></textarea>
                 </div>
             </div>
@@ -822,20 +1032,20 @@
             <!-- Preview Panel -->
             <div class="output-panel">
                 <div class="panel-header">
-                    <span>👁️ Live Preview</span>
+                    <span>👁️ Oracle's Vision</span>
                     <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-secondary btn-small" id="copyBtn" disabled aria-label="Copy Markdown to clipboard">
-                            📋 Copy
+                        <button class="btn btn-secondary btn-small" id="copyBtn" disabled aria-label="Copy to thy tablet">
+                            📋 Copy to Tablet
                         </button>
-                        <button class="btn btn-secondary btn-small" id="toggleImagesBtn" disabled aria-label="Toggle image display">
-                            🖼️ Images
+                        <button class="btn btn-secondary btn-small" id="showImagesBtn" disabled aria-label="Reveal the frescoes">
+                            🖼️ Show Frescoes
                         </button>
                     </div>
                 </div>
                 <div class="panel-content">
                     <div class="markdown-preview" id="markdownPreview">
                         <p style="text-align: center; color: var(--text-muted); margin-top: 2rem;">
-                            📄 Your converted document preview will appear here
+                            📜 Thy document's divine preview shall manifest here
                         </p>
                     </div>
                 </div>
@@ -844,16 +1054,18 @@
 
         <!-- Image Gallery -->
         <div id="imageGallery" style="display: none;">
-            <h3>🖼️ Extracted Images</h3>
+            <h3>🖼️ Illuminated Manuscripts & Frescoes</h3>
             <div class="image-gallery" id="imageGrid"></div>
         </div>
 
         <!-- Footer -->
         <footer class="footer">
             <p>
-                Built with ❤️ by <a href="https://github.com/allarddewinter" target="_blank" rel="noopener">Allard de Winter</a> | 
-                <a href="https://github.com/allarddewinter/pdf-to-markdown-converter" target="_blank" rel="noopener">View on GitHub</a> |
-                Powered by <a href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noopener">PDF.js</a>
+                Constructed with ❤️ by <a href="https://github.com/allarddewinter" target="_blank" rel="noopener">Allardus de Winter</a>, Official Scribe of the Ministry of Silly Scrolls | 
+                <a href="https://github.com/allarddewinter/pdf-to-markdown-converter" target="_blank" rel="noopener">Inspect on GitHub</a> |<br>
+                Powered by <a href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noopener">PDF.js</a> and <a href="https://tesseract.projectnaptha.com/" target="_blank" rel="noopener">Tesseract.js</a> |
+                Inspired by <a href="https://github.com/simonw/tools/blob/main/ocr.html" target="_blank" rel="noopener">Simon's Sacred OCR Tool</a><br>
+                <em>"Blessed are the PDFs, for they shall be transcribed!"</em>
             </p>
         </footer>
     </div>
@@ -863,15 +1075,14 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         /**
-         * 🚀 Advanced PDF to Markdown Converter with Hybrid Image Extraction
+         * 🚀 Advanced PDF to Markdown Converter with OCR Text Extraction
          * 
          * Features:
-         * - Intelligent text structure detection
-         * - Advanced image extraction with multiple fallback strategies
+         * - OCR-based text extraction using Tesseract.js
+         * - PDF rendering to images for OCR processing
          * - Real-time progress tracking and visual feedback
-         * - Robust error handling with graceful degradation
-         * - Mobile-responsive design with accessibility features
-         * - Multiple export formats (MD, ZIP with images)
+         * - Multiple export formats (MD, ZIP with frescoes, copy to clipboard)
+         * - Optional image display with button control
          */
         class AdvancedPDFToMarkdownConverter {
             constructor() {
@@ -899,7 +1110,8 @@
                 this.downloadMdBtn = document.getElementById('downloadMdBtn');
                 this.downloadZipBtn = document.getElementById('downloadZipBtn');
                 this.copyBtn = document.getElementById('copyBtn');
-                this.toggleImagesBtn = document.getElementById('toggleImagesBtn');
+                this.showImagesBtn = document.getElementById('showImagesBtn');
+                this.toggleDisclaimerBtn = document.getElementById('toggleDisclaimerBtn');
                 
                 // Stats and alerts
                 this.alertArea = document.getElementById('alertArea');
@@ -926,45 +1138,41 @@
                 this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
 
                 // Drag and drop events
-                this.uploadArea.addEventListener('dragover', (e) => this.handleDragOver(e));
-                this.uploadArea.addEventListener('dragleave', (e) => this.handleDragLeave(e));
-                this.uploadArea.addEventListener('drop', (e) => this.handleDrop(e));
+                ['dragover', 'drop'].forEach(event => {
+                    this.uploadArea.addEventListener(event, (e) => {
+                        e.preventDefault();
+                        if (event === 'drop') {
+                            const files = e.dataTransfer.files;
+                            if (files.length > 0) this.processFile(files[0]);
+                        }
+                    });
+                });
+                this.uploadArea.addEventListener('dragleave', (e) => e.preventDefault());
 
                 // Button events
                 this.downloadMdBtn.addEventListener('click', () => this.downloadMarkdown());
                 this.downloadZipBtn.addEventListener('click', () => this.downloadZipWithImages());
                 this.copyBtn.addEventListener('click', () => this.copyMarkdownToClipboard());
-                this.toggleImagesBtn.addEventListener('click', () => this.toggleImageDisplay());
+                this.showImagesBtn.addEventListener('click', () => this.toggleImageDisplay());
+                
+                // Toggle disclaimer button
+                this.toggleDisclaimerBtn.addEventListener('click', () => {
+                    this.toggleDisclaimer();
+                });
 
                 // Markdown editor live preview
                 this.markdownOutput.addEventListener('input', () => this.updatePreview());
-
-                // Keyboard shortcuts
-                document.addEventListener('keydown', (e) => {
-                    if (e.ctrlKey || e.metaKey) {
-                        switch (e.key) {
-                            case 's':
-                                e.preventDefault();
-                                if (!this.downloadMdBtn.disabled) this.downloadMarkdown();
-                                break;
-                            case 'c':
-                                if (e.shiftKey && !this.copyBtn.disabled) {
-                                    e.preventDefault();
-                                    this.copyMarkdownToClipboard();
-                                }
-                                break;
-                        }
-                    }
-                });
             }
 
             initializeState() {
                 this.markdownContent = '';
+                this.cleanMarkdownContent = ''; // Store clean content without disclaimer
+                this.showingDisclaimer = true; // Track disclaimer state
                 this.extractedImages = [];
                 this.processedPages = 0;
                 this.totalPages = 0;
                 this.processingStartTime = null;
-                this.showImages = true;
+                this.showImages = false;
                 this.documentStats = {
                     pages: 0,
                     images: 0,
@@ -974,29 +1182,10 @@
             }
 
             showWelcomeMessage() {
-                this.showAlert('info', '👋 Welcome! Drop a PDF file above to start converting to Markdown with smart image extraction.');
+                this.showAlert('info', '👋 Salve, citizen! Place thy ancient scrolls above and witness the miracle of transcription. No Romans were harmed in the making of this tool.');
             }
 
             // ==================== FILE HANDLING ====================
-
-            handleDragOver(e) {
-                e.preventDefault();
-                this.uploadArea.classList.add('dragover');
-            }
-
-            handleDragLeave(e) {
-                e.preventDefault();
-                this.uploadArea.classList.remove('dragover');
-            }
-
-            handleDrop(e) {
-                e.preventDefault();
-                this.uploadArea.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    this.processFile(files[0]);
-                }
-            }
 
             handleFileSelect(e) {
                 const file = e.target.files[0];
@@ -1015,48 +1204,94 @@
                     this.showProgress();
                     this.processingStartTime = Date.now();
                     
-                    this.updateStatus('🔍 Reading PDF file...');
+                    this.updateStatus('🔍 Deciphering the sacred parchment...');
                     this.updateProgress(5);
 
-                    const arrayBuffer = await this.readFileAsArrayBuffer(file);
-                    this.updateProgress(15);
-
-                    this.updateStatus('📋 Parsing PDF structure...');
-                    const result = await this.convertPDFToMarkdown(arrayBuffer);
+                    if (file.type === 'application/pdf') {
+                        await this.processPDF(file);
+                    } else {
+                        await this.processImage(file);
+                    }
                     
-                    this.documentStats.processingTime = Math.round((Date.now() - this.processingStartTime) / 1000);
-                    
-                    this.updateProgress(100);
-                    this.updateStatus('✅ Conversion completed successfully!');
-                    
-                    this.displayResults(result);
-                    this.hideProgress();
-                    
-                    // Show success message with stats
-                    this.showAlert('success', 
-                        `🎉 Successfully converted ${this.documentStats.pages} pages with ${this.documentStats.images} images in ${this.documentStats.processingTime}s!`
-                    );
-
                 } catch (error) {
-                    console.error('Conversion error:', error);
-                    this.showAlert('error', `❌ Conversion failed: ${error.message}`);
+                    console.error('Transcription catastrophe:', error);
+                    this.showAlert('error', `❌ Alas! The conversion has failed like a Roman invasion of Germania: ${error.message}`);
                     this.hideProgress();
                 }
             }
 
             validateFile(file) {
-                if (file.type !== 'application/pdf') {
-                    this.showAlert('error', '📋 Please select a valid PDF file.');
+                const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    this.showAlert('error', '📋 By Jupiter\'s beard! Please present a proper scroll (PDF) or stone tablet (image), not whatever that was.');
                     return false;
                 }
 
                 const maxSize = 100 * 1024 * 1024; // 100MB
                 if (file.size > maxSize) {
-                    this.showAlert('error', '📏 File size must be less than 100MB for optimal performance.');
+                    this.showAlert('error', '📏 Great Caesar\'s ghost! That scroll is too massive. Keep it under 100MB, lest the servers revolt.');
                     return false;
                 }
 
                 return true;
+            }
+
+            async processPDF(file) {
+                const arrayBuffer = await this.readFileAsArrayBuffer(file);
+                const result = await this.convertPDFToMarkdown(arrayBuffer);
+                
+                this.documentStats.processingTime = Math.round((Date.now() - this.processingStartTime) / 1000);
+                
+                this.updateProgress(100);
+                this.updateStatus('✅ Transcription complete! The scribes would be proud!');
+                
+                this.displayResults(result);
+                this.hideProgress();
+                
+                this.showAlert('success', 
+                    `🎉 Huzzah! Successfully transcribed ${this.documentStats.pages} scroll pages in ${this.documentStats.processingTime}s! Even Pontius Pilate would applaud!`
+                );
+            }
+
+            async processImage(file) {
+                this.updateStatus('📸 Consulting the Oracle of Optical Character Recognition...');
+                this.updateProgress(20);
+
+                const worker = await Tesseract.createWorker('eng');
+                const imageURL = URL.createObjectURL(file);
+                
+                this.updateProgress(50);
+                const { data: { text } } = await worker.recognize(imageURL);
+                await worker.terminate();
+
+                this.documentStats.pages = 1;
+                this.documentStats.images = 1;
+                this.documentStats.words = this.countWords(text);
+                this.documentStats.processingTime = Math.round((Date.now() - this.processingStartTime) / 1000);
+
+                const result = {
+                    markdown: `# Extracted Text\n\n${text.trim()}`,
+                    images: [{
+                        filename: file.name,
+                        data: imageURL,
+                        alt: 'Original Image',
+                        pageNum: 1,
+                        extractionMethod: 'divine-intervention'
+                    }],
+                    stats: this.documentStats
+                };
+
+                this.extractedImages = result.images;
+                
+                this.updateProgress(100);
+                this.updateStatus('✅ The Oracle has spoken! Text extraction complete!');
+                
+                this.displayResults(result);
+                this.hideProgress();
+                
+                this.showAlert('success', 
+                    `🎉 By the gods! Successfully extracted wisdom from thy tablet in ${this.documentStats.processingTime}s! The Ministry of Silly Scrolls approves!`
+                );
             }
 
             readFileAsArrayBuffer(file) {
@@ -1066,6 +1301,30 @@
                     reader.onerror = () => reject(new Error('Failed to read file. Please try again.'));
                     reader.readAsArrayBuffer(file);
                 });
+            }
+
+            countWords(text) {
+                return text.split(/\s+/).filter(word => word.length > 0).length;
+            }
+
+            // ==================== UI MANAGEMENT ====================
+
+            displayResults(result) {
+                // Store the clean content
+                this.cleanMarkdownContent = result.markdown;
+                
+                // Start with disclaimer shown (default state)
+                this.showingDisclaimer = false; // Set to false so toggle will make it true
+                this.toggleDisclaimer();
+                
+                this.displayStats(result.stats);
+                this.displayImageGallery(result.images);
+                
+                this.conversionArea.style.display = 'grid';
+                this.enableButtons();
+                
+                // Scroll to results
+                this.conversionArea.scrollIntoView({ behavior: 'smooth' });
             }
 
             // ==================== PDF CONVERSION ====================
@@ -1081,408 +1340,101 @@
                 
                 let markdown = '';
                 let documentImages = [];
-                let imageExtractionWarnings = [];
 
-                this.updateStatus(`📄 Processing ${pdf.numPages} pages...`);
+                this.updateStatus(`📄 Transcribing ${pdf.numPages} sacred scrolls...`);
 
-                // Process each page
+                // Initialize OCR worker with basic settings
+                const worker = await Tesseract.createWorker('eng');
+
+                // Process each page using Simon's method
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                     this.updateProgress(15 + (pageNum / pdf.numPages) * 70);
-                    this.updateStatus(`📖 Processing page ${pageNum} of ${pdf.numPages}...`);
+                    this.updateStatus(`📖 Transcribing scroll ${pageNum} of ${pdf.numPages}... The Oracle is pleased.`);
 
                     try {
                         const page = await pdf.getPage(pageNum);
                         
-                        // Extract text content
-                        const textContent = await page.getTextContent();
-                        const pageMarkdown = this.processPageContent(textContent, pageNum);
+                        // Render page to canvas (Simon's approach)
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        const viewport = page.getViewport({ scale: 1 });
                         
-                        // Try to extract images with hybrid approach
-                        const pageImages = await this.extractPageImages(page, pageNum);
+                        const desiredWidth = 1000;
+                        canvas.width = desiredWidth;
+                        canvas.height = (desiredWidth / viewport.width) * viewport.height;
                         
-                        if (pageImages.warnings.length > 0) {
-                            imageExtractionWarnings.push(...pageImages.warnings);
-                        }
-
-                        documentImages.push(...pageImages.images);
+                        const renderContext = {
+                            canvasContext: context,
+                            viewport: page.getViewport({ scale: desiredWidth / viewport.width }),
+                        };
                         
-                        // Combine text and image references
-                        let combinedContent = pageMarkdown;
-                        if (pageImages.images.length > 0) {
-                            combinedContent += '\n\n';
-                            pageImages.images.forEach(img => {
-                                combinedContent += `![${img.alt}](${img.filename})\n\n`;
-                            });
-                        }
-
-                        markdown += combinedContent;
+                        await page.render(renderContext).promise;
+                        const imageURL = canvas.toDataURL('image/jpeg', 0.8);
                         
-                        if (pageNum < pdf.numPages) {
-                            markdown += '\n\n---\n\n'; // Page separator
+                        // Add page image to collection
+                        documentImages.push({
+                            filename: `page-${pageNum}.jpg`,
+                            data: imageURL,
+                            alt: `Page ${pageNum}`,
+                            pageNum: pageNum,
+                            extractionMethod: 'divine-optical-recognition'
+                        });
+                        
+                        // Run OCR on the rendered page (Simon's approach)
+                        const { data: { text } } = await worker.recognize(imageURL);
+                        
+                        // Add OCR text to markdown with accurate formatting
+                        if (text.trim()) {
+                            markdown += `## Page ${pageNum}\n\n`;
+                            markdown += text.trim() + '\n\n';
+                            
+                            if (pageNum < pdf.numPages) {
+                                markdown += '---\n\n';
+                            }
                         }
 
                     } catch (pageError) {
                         console.warn(`Error processing page ${pageNum}:`, pageError);
-                        this.showAlert('warning', `⚠️ Partial error on page ${pageNum}. Continuing with available content.`);
+                        this.showAlert('warning', `⚠️ Alas! Partial error on page ${pageNum}. Continuing with available wisdom. Not even Caesar was perfect.`);
                     }
                 }
 
+                // Cleanup OCR worker
+                await worker.terminate();
+
                 // Finalize processing
-                this.updateStatus('🎨 Finalizing conversion...');
+                this.updateStatus('🎨 Adding finishing touches worthy of Augustus...');
                 this.updateProgress(90);
 
                 this.extractedImages = documentImages;
                 this.documentStats.images = documentImages.length;
                 this.documentStats.words = this.countWords(markdown);
 
-                // Show image extraction warnings if any
-                if (imageExtractionWarnings.length > 0) {
-                    this.showAlert('warning', 
-                        `⚠️ Image extraction encountered ${imageExtractionWarnings.length} issues. Text extraction completed successfully.`
-                    );
-                }
-
                 return {
-                    markdown: this.cleanupMarkdown(markdown),
+                    markdown: markdown.trim(),
                     images: documentImages,
                     stats: this.documentStats
                 };
             }
 
-            // ==================== HYBRID IMAGE EXTRACTION ====================
-
-            async extractPageImages(page, pageNum) {
-                const images = [];
-                const warnings = [];
-
-                try {
-                    // Strategy 1: Direct PDF image object extraction
-                    const directImages = await this.extractDirectImages(page, pageNum);
-                    images.push(...directImages);
-
-                } catch (error) {
-                    warnings.push(`Direct image extraction failed on page ${pageNum}: ${error.message}`);
-                    
-                    try {
-                        // Strategy 2: Canvas-based rendering fallback
-                        const canvasImages = await this.extractCanvasImages(page, pageNum);
-                        images.push(...canvasImages);
-                        
-                    } catch (canvasError) {
-                        warnings.push(`Canvas image extraction failed on page ${pageNum}: ${canvasError.message}`);
-                        
-                        try {
-                            // Strategy 3: Annotation-based extraction
-                            const annotationImages = await this.extractAnnotationImages(page, pageNum);
-                            images.push(...annotationImages);
-                            
-                        } catch (annotError) {
-                            warnings.push(`All image extraction methods failed on page ${pageNum}`);
-                        }
-                    }
-                }
-
-                return { images, warnings };
-            }
-
-            async extractDirectImages(page, pageNum) {
-                const images = [];
+            toggleDisclaimer() {
+                if (!this.cleanMarkdownContent) return;
                 
-                try {
-                    const operatorList = await page.getOperatorList();
-                    
-                    for (let i = 0; i < operatorList.fnArray.length; i++) {
-                        if (operatorList.fnArray[i] === pdfjsLib.OPS.paintImageXObject) {
-                            const imageName = operatorList.argsArray[i][0];
-                            
-                            try {
-                                const imageData = await this.getImageData(page, imageName);
-                                if (imageData) {
-                                    images.push({
-                                        filename: `page-${pageNum}-${imageName}.png`,
-                                        data: imageData,
-                                        alt: `Image from page ${pageNum}`,
-                                        pageNum: pageNum,
-                                        extractionMethod: 'direct'
-                                    });
-                                }
-                            } catch (imgError) {
-                                console.warn(`Failed to extract image ${imageName} from page ${pageNum}:`, imgError);
-                            }
-                        }
-                    }
-                } catch (error) {
-                    throw new Error(`Direct extraction failed: ${error.message}`);
-                }
-
-                return images;
-            }
-
-            async extractCanvasImages(page, pageNum) {
-                const images = [];
+                this.showingDisclaimer = !this.showingDisclaimer;
                 
-                try {
-                    // Create canvas for page rendering
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
+                if (this.showingDisclaimer) {
+                    // Add disclaimer
+                    const disclaimer = `> **OCR Processing Note**: This text was extracted from a PDF using Optical Character Recognition (OCR). Please note that:\n> - Lists may not be properly formatted as Markdown lists\n> - Table structures might be disrupted\n> - Some text formatting and spacing may be inconsistent\n> - Complex layouts may affect text flow and organization\n> - Consider manual review for critical applications\n\n---\n\n`;
                     
-                    const viewport = page.getViewport({ scale: 1.5 });
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-                    
-                    await page.render({
-                        canvasContext: context,
-                        viewport: viewport
-                    }).promise;
-                    
-                    // Convert canvas to image data
-                    const imageData = canvas.toDataURL('image/png');
-                    
-                    images.push({
-                        filename: `page-${pageNum}-render.png`,
-                        data: imageData,
-                        alt: `Rendered page ${pageNum}`,
-                        pageNum: pageNum,
-                        extractionMethod: 'canvas'
-                    });
-                    
-                } catch (error) {
-                    throw new Error(`Canvas extraction failed: ${error.message}`);
-                }
-
-                return images;
-            }
-
-            async extractAnnotationImages(page, pageNum) {
-                const images = [];
-                
-                try {
-                    const annotations = await page.getAnnotations();
-                    
-                    annotations.forEach((annotation, index) => {
-                        if (annotation.subtype === 'Image' || annotation.hasAppearance) {
-                            // This is a simplified approach - real implementation would be more complex
-                            images.push({
-                                filename: `page-${pageNum}-annotation-${index}.png`,
-                                data: null, // Would extract actual annotation data
-                                alt: `Annotation from page ${pageNum}`,
-                                pageNum: pageNum,
-                                extractionMethod: 'annotation'
-                            });
-                        }
-                    });
-                } catch (error) {
-                    throw new Error(`Annotation extraction failed: ${error.message}`);
-                }
-
-                return images;
-            }
-
-            async getImageData(page, imageName) {
-                // This is a simplified placeholder
-                // Real implementation would access the page's resource dictionary
-                return null;
-            }
-
-            // ==================== TEXT PROCESSING ====================
-
-            processPageContent(textContent, pageNum) {
-                let pageText = '';
-                let currentLine = '';
-                let lastY = null;
-                const lines = [];
-
-                // Group text items by line
-                textContent.items.forEach(item => {
-                    const y = Math.round(item.transform[5]);
-                    
-                    if (lastY !== null && Math.abs(y - lastY) > 3) {
-                        if (currentLine.trim()) {
-                            lines.push({
-                                text: currentLine.trim(),
-                                fontSize: this.getAverageFontSize(textContent.items, lastY),
-                                y: lastY,
-                                fontName: item.fontName || 'default'
-                            });
-                        }
-                        currentLine = '';
-                    }
-                    
-                    currentLine += item.str;
-                    lastY = y;
-                });
-
-                // Add the last line
-                if (currentLine.trim()) {
-                    lines.push({
-                        text: currentLine.trim(),
-                        fontSize: textContent.items[textContent.items.length - 1]?.height || 12,
-                        y: lastY,
-                        fontName: textContent.items[textContent.items.length - 1]?.fontName || 'default'
-                    });
-                }
-
-                // Convert lines to markdown with enhanced formatting
-                lines.forEach(line => {
-                    const formattedLine = this.formatLineAsMarkdown(line);
-                    if (formattedLine) {
-                        pageText += formattedLine + '\n';
-                    }
-                });
-
-                return pageText;
-            }
-
-            getAverageFontSize(items, targetY) {
-                const lineItems = items.filter(item => 
-                    Math.abs(Math.round(item.transform[5]) - targetY) <= 3
-                );
-                
-                if (lineItems.length === 0) return 12;
-                
-                const totalSize = lineItems.reduce((sum, item) => sum + (item.height || 12), 0);
-                return totalSize / lineItems.length;
-            }
-
-            formatLineAsMarkdown(line) {
-                const text = line.text.trim();
-                if (!text) return '';
-
-                // Enhanced heading detection
-                if (this.isHeading(line)) {
-                    const level = this.determineHeadingLevel(line);
-                    return '#'.repeat(level) + ' ' + text;
-                }
-
-                // List item detection with improved patterns
-                if (this.isListItem(text)) {
-                    return this.formatListItem(text);
-                }
-
-                // Table row detection
-                if (this.isTableRow(text)) {
-                    return this.formatTableRow(text);
-                }
-
-                // Quote detection
-                if (this.isQuote(text)) {
-                    return '> ' + text.replace(/^["'""'']/g, '').replace(/["'""'']$/g, '');
-                }
-
-                // Code block detection
-                if (this.isCodeBlock(line)) {
-                    return '```\n' + text + '\n```';
-                }
-
-                // Regular paragraph
-                return text;
-            }
-
-            isHeading(line) {
-                const text = line.text;
-                return (
-                    line.fontSize > 14 ||
-                    text.toUpperCase() === text && text.length < 100 ||
-                    /^(Chapter|Section|Part|Article)\s+\d+/i.test(text) ||
-                    /^\d+\.?\s+[A-Z]/.test(text) ||
-                    line.fontName?.includes('Bold') ||
-                    line.fontName?.includes('Heading')
-                );
-            }
-
-            determineHeadingLevel(line) {
-                if (line.fontSize > 24) return 1;
-                if (line.fontSize > 18) return 2;
-                if (line.fontSize > 16) return 3;
-                if (line.fontSize > 14) return 4;
-                if (this.isMainHeading(line.text)) return 2;
-                return 3;
-            }
-
-            isMainHeading(text) {
-                return /^(Chapter|Section|Part|Article)\s+\d+/i.test(text) ||
-                       text.toUpperCase() === text && text.length < 50;
-            }
-
-            isListItem(text) {
-                return /^[-•*◦▪▫]\s/.test(text) ||
-                       /^\d+[.)]\s/.test(text) ||
-                       /^[a-zA-Z][.)]\s/.test(text) ||
-                       /^[ivxlcdm]+[.)]\s/i.test(text);
-            }
-
-            formatListItem(text) {
-                // Numbered lists
-                if (/^\d+[.)]\s/.test(text)) {
-                    const match = text.match(/^(\d+)[.)]\s(.+)/);
-                    return match ? `${match[1]}. ${match[2]}` : text;
+                    this.markdownOutput.value = disclaimer + this.cleanMarkdownContent;
+                    this.toggleDisclaimerBtn.textContent = '🔍 Hide OCR Info';
+                } else {
+                    // Show clean content
+                    this.markdownOutput.value = this.cleanMarkdownContent;
+                    this.toggleDisclaimerBtn.textContent = '🔍 Show OCR Info';
                 }
                 
-                // Lettered lists
-                if (/^[a-zA-Z][.)]\s/.test(text)) {
-                    return '- ' + text.replace(/^[a-zA-Z][.)]\s/, '');
-                }
-                
-                // Roman numeral lists
-                if (/^[ivxlcdm]+[.)]\s/i.test(text)) {
-                    return '- ' + text.replace(/^[ivxlcdm]+[.)]\s/i, '');
-                }
-                
-                // Bullet points
-                return '- ' + text.replace(/^[-•*◦▪▫]\s/, '');
-            }
-
-            isTableRow(text) {
-                // Simple heuristic for table detection
-                const parts = text.split(/\s{3,}|\t/);
-                return parts.length >= 3 && parts.every(part => part.trim().length > 0);
-            }
-
-            formatTableRow(text) {
-                const parts = text.split(/\s{3,}|\t/).map(part => part.trim());
-                return '| ' + parts.join(' | ') + ' |';
-            }
-
-            isQuote(text) {
-                return /^["'""'']/.test(text) || 
-                       text.startsWith('Quote:') ||
-                       text.startsWith('"') && text.endsWith('"');
-            }
-
-            isCodeBlock(line) {
-                return line.fontName?.includes('Mono') ||
-                       line.fontName?.includes('Code') ||
-                       /^[\s]*[{}();,.]/.test(line.text);
-            }
-
-            cleanupMarkdown(markdown) {
-                return markdown
-                    .replace(/\n{4,}/g, '\n\n\n') // Limit excessive line breaks
-                    .replace(/^\s+/gm, '') // Remove leading whitespace
-                    .replace(/\s+$/gm, '') // Remove trailing whitespace
-                    .replace(/\n\n\n/g, '\n\n') // Clean up triple line breaks
-                    .trim();
-            }
-
-            countWords(text) {
-                return text.split(/\s+/).filter(word => word.length > 0).length;
-            }
-
-            // ==================== UI MANAGEMENT ====================
-
-            displayResults(result) {
-                this.markdownContent = result.markdown;
-                this.markdownOutput.value = result.markdown;
                 this.updatePreview();
-                
-                this.displayStats(result.stats);
-                this.displayImageGallery(result.images);
-                
-                this.conversionArea.style.display = 'grid';
-                this.enableButtons();
-                
-                // Scroll to results
-                this.conversionArea.scrollIntoView({ behavior: 'smooth' });
             }
 
             displayStats(stats) {
@@ -1643,22 +1595,24 @@
                 this.downloadMdBtn.disabled = false;
                 this.downloadZipBtn.disabled = false;
                 this.copyBtn.disabled = false;
-                this.toggleImagesBtn.disabled = false;
+                this.showImagesBtn.disabled = false;
+                this.toggleDisclaimerBtn.disabled = false;
             }
 
             async downloadMarkdown() {
                 try {
-                    const blob = new Blob([this.markdownContent], { type: 'text/markdown;charset=utf-8' });
+                    const content = this.markdownOutput.value || this.markdownContent;
+                    const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'converted-document.md';
+                    a.download = 'ocr-extracted-text.md';
                     a.click();
                     URL.revokeObjectURL(url);
                     
-                    this.showAlert('success', '📥 Markdown file downloaded successfully!');
+                    this.showAlert('success', '📥 Sacred scroll downloaded successfully! May it serve the People\'s Front well!');
                 } catch (error) {
-                    this.showAlert('error', 'Failed to download Markdown file: ' + error.message);
+                    this.showAlert('error', 'Failed to download the sacred scroll: ' + error.message + ' (Romans probably involved)');
                 }
             }
 
@@ -1672,7 +1626,8 @@
                     const zip = new JSZip();
                     
                     // Add markdown file
-                    zip.file('document.md', this.markdownContent);
+                    const markdownContent = this.markdownOutput.value || this.markdownContent;
+                    zip.file('ocr-extracted-text.md', markdownContent);
                     
                     // Add images folder
                     const imgFolder = zip.folder('images');
@@ -1687,15 +1642,24 @@
                     });
                     
                     // Add readme
-                    zip.file('README.txt', `PDF to Markdown Conversion
+                    zip.file('README.txt', `OCR Text Extraction Results - By Order of the Ministry of Silly Scrolls
 Generated: ${new Date().toISOString()}
-Pages: ${this.documentStats.pages}
-Images: ${addedImages}
-Words: ${this.documentStats.words}
+Source: Sacred PDF scroll processed with Divine OCR (Optical Character Recognition)
+Scrolls: ${this.documentStats.pages}
+Frescoes: ${addedImages}
+Sacred Words: ${this.documentStats.words}
 
-Files:
-- document.md: The converted Markdown content
-- images/: Extracted images folder
+Files Contained Within This Treasure Chest:
+- ocr-extracted-text.md: The transcribed wisdom from thy ancient scrolls
+- images/: Divine frescoes used for OCR transcription worthy of Caesar
+
+Imperial Notice: This text was extracted using OCR magic. Some formatting, 
+lists, and structures may not be perfectly preserved due to the limitations 
+of mortal technology. Please review for accuracy when using in matters of 
+great importance to the Empire.
+
+"Blessed are the PDFs, for they shall be transcribed!"
+- Ministry of Silly Scrolls, Official Scribe Division
 `);
                     
                     this.updateStatus('📦 Creating ZIP file...');
@@ -1708,11 +1672,11 @@ Files:
                     const url = URL.createObjectURL(content);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'converted-document-with-images.zip';
+                    a.download = 'ocr-extracted-with-images.zip';
                     a.click();
                     URL.revokeObjectURL(url);
                     
-                    this.showAlert('success', `📦 ZIP file downloaded with ${addedImages} images!`);
+                    this.showAlert('success', `📦 ZIP file downloaded with ${addedImages} divine frescoes! Ave Caesar!`);
                     
                 } catch (error) {
                     console.error('ZIP creation error:', error);
@@ -1722,28 +1686,30 @@ Files:
 
             async copyMarkdownToClipboard() {
                 try {
-                    await navigator.clipboard.writeText(this.markdownContent);
-                    this.copyBtn.textContent = '✅ Copied!';
+                    const content = this.markdownOutput.value || this.markdownContent;
+                    await navigator.clipboard.writeText(content);
+                    this.copyBtn.textContent = '✅ Inscribed!';
                     setTimeout(() => {
-                        this.copyBtn.innerHTML = '📋 Copy';
+                        this.copyBtn.innerHTML = '📋 Copy to Tablet';
                     }, 2000);
-                    this.showAlert('success', '📋 Markdown copied to clipboard!');
+                    this.showAlert('success', '📋 Sacred text copied to thy clipboard tablet! The gods smile upon thee!');
                 } catch (error) {
                     // Fallback for older browsers
+                    const content = this.markdownOutput.value || this.markdownContent;
                     const textarea = document.createElement('textarea');
-                    textarea.value = this.markdownContent;
+                    textarea.value = content;
                     document.body.appendChild(textarea);
                     textarea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textarea);
                     
-                    this.showAlert('success', '📋 Markdown copied to clipboard!');
+                    this.showAlert('success', '📋 Text inscribed upon thy tablet! (Via ancient browser magic)');
                 }
             }
 
             toggleImageDisplay() {
                 this.showImages = !this.showImages;
-                this.toggleImagesBtn.textContent = this.showImages ? '🖼️ Hide Images' : '👁️ Show Images';
+                this.showImagesBtn.textContent = this.showImages ? '🖼️ Hide Frescoes' : '👁️ Show Frescoes';
                 this.imageGallery.style.display = this.showImages && this.extractedImages.length > 0 ? 'block' : 'none';
             }
 
@@ -1766,11 +1732,6 @@ Files:
 
         // ==================== INITIALIZATION ====================
 
-        // Initialize the converter when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            new AdvancedPDFToMarkdownConverter();
-        });
-
         // Add service worker for PWA functionality (optional)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -1784,6 +1745,12 @@ Files:
             const loadTime = performance.now();
             console.log(`🚀 App loaded in ${Math.round(loadTime)}ms`);
         });
+
+        // Initialize the converter when DOM is ready
+        window.addEventListener('DOMContentLoaded', () => {
+            new AdvancedPDFToMarkdownConverter();
+        });
     </script>
 </body>
 </html>
+
